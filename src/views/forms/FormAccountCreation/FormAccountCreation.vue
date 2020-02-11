@@ -174,7 +174,8 @@ import {FormAccountCreationTs} from './FormAccountCreationTs'
 export default class FormAccountCreation extends FormAccountCreationTs {}
 </script>
 
-<style>
+<style lang="less">
+@import '../../resources/css/variables.less';
 .right-hints-section {
   display: block;
   position: absolute;
