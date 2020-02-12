@@ -141,7 +141,7 @@ export class FormWalletNameUpdateTs extends Vue {
   /**
    * When account is unlocked, the sub wallet can be created
    */
-  public onAccountUnlocked(account, password) {
+  public onAccountUnlocked(account: Account, password: Password) {
     // - interpret form items
     const values = this.formItems
 

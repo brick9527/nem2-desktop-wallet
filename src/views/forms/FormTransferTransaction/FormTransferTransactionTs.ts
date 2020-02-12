@@ -26,16 +26,15 @@ import {
   PublicAccount,
   RawUInt64,
   NamespaceId,
+  UInt64,
 } from 'nem2-sdk'
-import {Component, Vue, Prop, Watch} from 'vue-property-decorator'
-import {mapGetters} from 'vuex'
+import {Component, Vue, Prop} from 'vue-property-decorator'
 
 // internal dependencies
-import {WalletsModel} from '@/core/database/entities/WalletsModel'
 import {Formatters} from '@/core/utils/Formatters'
+import {ViewTransferTransaction, TransferFormFieldsType} from '@/core/transactions/ViewTransferTransaction'
+import {FormTransactionBase} from '@/views/forms/FormTransactionBase/FormTransactionBase'
 import {TransactionFactory} from '@/core/transactions/TransactionFactory'
-import {TransferTransactionParams} from '@/core/transactions/TransferTransactionParams'
-import {NotificationType} from '@/core/utils/NotificationType'
 
 // configuration
 import feesConfig from '@/../config/fees.conf.json'
@@ -65,7 +64,6 @@ import RecipientInput from '@/components/RecipientInput/RecipientInput.vue'
 // @ts-ignore
 import SignerSelector from '@/components/SignerSelector/SignerSelector.vue'
 
-
 type MosaicAttachmentType = {id: MosaicId, mosaicHex: string, name: string, amount: number}
 
 @Component({
@@ -83,19 +81,9 @@ type MosaicAttachmentType = {id: MosaicId, mosaicHex: string, name: string, amou
     SignerSelector,
     ValidationObserver,
   },
-  computed: {...mapGetters({
-    currentWallet: 'wallet/currentWallet',
-    currentWalletMosaics: 'wallet/currentWalletMosaics',
-    currentMultisigInfo: 'wallet/currentMultisigInfo',
-    networkMosaic: 'mosaic/networkMosaic',
-    stagedTransactions: 'wallet/stagedTransactions',
-    mosaicsInfo: 'mosaic/mosaicsInfoList',
-    mosaicsNames: 'mosaic/mosaicsNames',
-    namespacesNames: 'namespace/namespacesNames',
-  })}
 })
-export class FormTransferCreationTs extends Vue {
-  // @TODO: check if props needed
+export class FormTransferTransactionTs extends FormTransactionBase {
+/// region component properties
   @Prop({
     default: null
   }) signer: PublicAccount
@@ -119,65 +107,13 @@ export class FormTransferCreationTs extends Vue {
   @Prop({
     default: false
   }) hideSigner: boolean
-  /**
-   * Currently active wallet
-   * @var {WalletsModel}
-   */
-  public currentWallet: WalletsModel
-
-  /**
-   * Currently active wallet's balances
-   * @var {Mosaic[]}
-   */
-  public currentWalletMosaics: Mosaic[]
-
-  /**
-   * Currently active wallet's multisig info
-   * @var {MultisigAccountInfo}
-   */
-  public currentMultisigInfo: MultisigAccountInfo
-
-  /**
-   * Networks currency mosaic
-   * @var {MosaicId}
-   */
-  public networkMosaic: MosaicId
-
-  /**
-   * Currently staged transactions
-   * @var {Transaction[]}
-   */
-  public stagedTransactions: Transaction[]
-
-  /**
-   * List of known mosaics
-   * @var {MosaicInfo[]}
-   */
-  public mosaicsInfo: MosaicInfo[]
-
-  /**
-   * List of known mosaics names
-   * @var {any}
-   */
-  public mosaicsNames: any
-
-  /**
-   * List of known namespaces names
-   * @var {any}
-   */
-  public namespacesNames: any
+/// end-region component properties
 
   /**
    * Formatters helpers
    * @var {Formatters}
    */
   public formatters = Formatters
-
-  /**
-   * Transaction factory
-   * @var {TransactionFactory}
-   */
-  public factory: TransactionFactory
 
   /**
    * Form items
@@ -195,11 +131,17 @@ export class FormTransferCreationTs extends Vue {
   }
 
   /**
-   * Hook called when the component is mounted
+   * Reset the form with properties
    * @return {void}
    */
-  public async created() {
-    this.factory = new TransactionFactory(this.$store)
+  protected resetForm() {
+    // - re-populate form if transaction staged
+    if (this.stagedTransactions.length) {
+      const transfer = this.stagedTransactions.find(staged => staged.type === TransactionType.TRANSFER)
+      this.setTransactions([transfer as TransferTransaction])
+      this.isAwaitingSignature = true
+      return ;
+    }
 
     // - set default form values
     this.formItems.signerPublicKey = !!this.signer ? this.signer.publicKey : this.currentWallet.values.get('publicKey')
@@ -210,18 +152,70 @@ export class FormTransferCreationTs extends Vue {
     this.formItems.messagePlain = !!this.message ? Formatters.hexToUtf8(this.message.payload) : ''
 
     // - maxFee must be absolute
-    const info = this.mosaicsInfo.find(i => i.id.toHex() === this.formItems.selectedMosaicHex)
-    const div = info ? info.divisibility : 0
-    this.formItems.maxFee = feesConfig['single'].find(s => s.speed === 'NORMAL').value * Math.pow(10, div)
+    this.formItems.maxFee = this.defaultFee
+  }
 
-    // - re-populate form if transaction staged
-    if (this.stagedTransactions.length) {
-      const transfer = this.stagedTransactions.find(staged => staged.type === TransactionType.TRANSFER)
-      this.transaction = transfer as TransferTransaction
+  /**
+   * Getter for TRANSFER transactions that will be staged
+   * @see {FormTransactionBase}
+   * @return {TransferTransaction[]}
+   */
+  protected getTransactions(): TransferTransaction[] {
+    this.factory = new TransactionFactory(this.$store)
+    try {
+      // - read form
+      const data: TransferFormFieldsType = {
+        recipient: this.instantiatedRecipient,
+        mosaics: this.attachedMosaics.map(
+          (spec: {mosaicHex: string, amount: number}): {mosaicHex: string, amount: number} => ({
+            mosaicHex: spec.mosaicHex,
+            amount: spec.amount // amount is relative
+          })),
+        message: this.formItems.messagePlain,
+        maxFee: UInt64.fromUint(this.formItems.maxFee),
+      }
+      
+      // - prepare transaction parameters
+      let view = new ViewTransferTransaction(this.$store)
+      view = view.parse(data)
+      
+      // - prepare transfer transaction
+      return [this.factory.build(view)]
+    } catch (error) {
+      console.error('Error happened in FormTransferTransaction.transactions(): ', error)
     }
+  }
+  
+  /**
+   * Setter for TRANSFER transactions that will be staged
+   * @see {FormTransactionBase}
+   * @param {TransferTransaction[]} transactions
+   * @throws {Error} If not overloaded in derivate component
+   */
+  protected setTransactions(transactions: TransferTransaction[]) {
+    // - this form creates only 1 transaction
+    const transaction = transactions.shift()
+
+    // - populate recipient
+    this.formItems.recipientRaw = transaction.recipientAddress instanceof Address
+    ? transaction.recipientAddress.plain()
+    : (transaction.recipientAddress as NamespaceId).fullName
+    
+    // - populate attached mosaics
+    this.attachedMosaics = this.mosaicsToAttachments(transaction.mosaics)
+    
+    // - convert and populate message
+    this.formItems.messagePlain = Formatters.hexToUtf8(transaction.message.payload)
+    
+    // - populate maxFee
+    this.formItems.maxFee = transaction.maxFee.compact()
   }
 
 /// region computed properties getter/setter
+  /**
+   * Getter for attached mosaics
+   * @return {MosaicAttachmentType[]}
+   */
   public get attachedMosaics(): MosaicAttachmentType[] {
     if (this.mosaics && this.mosaics.length) {
       return this.mosaicsToAttachments(this.mosaics)
@@ -230,48 +224,12 @@ export class FormTransferCreationTs extends Vue {
     return this.formItems.attachedMosaics || []
   }
 
+  /**
+   * Setter for attached mosaics
+   * @param {MosaicAttachmentType[]} attachments
+   */
   public set attachedMosaics(attachments: MosaicAttachmentType[]) {
     this.formItems.attachedMosaics = attachments
-  }
-
-  protected get transaction(): TransferTransaction {
-    try {
-      // - read form
-      const data = {
-        recipient: this.instantiatedRecipient,
-        mosaics: this.attachedMosaics.map(
-          (spec: {mosaicHex: string, amount: number}): {mosaicHex: string, amount: number} => ({
-            mosaicHex: spec.mosaicHex,
-            amount: spec.amount // amount is relative
-          })),
-        message: this.formItems.messagePlain,
-      }
-
-      // - prepare transaction parameters
-      const params = TransferTransactionParams.create(data, this.mosaicsInfo)
-
-      // - prepare transfer transaction
-      return this.factory.build('TransferTransaction', params)
-    } catch (error) {
-      return null
-    }
-
-  }
-
-  protected set transaction(transaction: TransferTransaction) {
-    // - populate recipient
-    this.formItems.recipientRaw = transaction.recipientAddress instanceof Address
-                                ? transaction.recipientAddress.plain()
-                                : (transaction.recipientAddress as NamespaceId).toHex()
-
-    // - populate attached mosaics
-    this.attachedMosaics = this.mosaicsToAttachments(transaction.mosaics)
-
-    // - convert and populate message
-    this.formItems.messagePlain = Formatters.hexToUtf8(transaction.message.payload)
-
-    // - populate maxFee
-    this.formItems.maxFee = transaction.maxFee.compact()
   }
 
   /**
@@ -292,25 +250,6 @@ export class FormTransferCreationTs extends Vue {
 /// end-region computed properties getter/setter
 
   /**
-   * Hook called when the child component ModalTransactionConfirmation triggers
-   * the event 'success'
-   * @return {void}
-   */
-  public onConfirmationSuccess() {
-    this.$store.dispatch('notification/ADD_SUCCESS', NotificationType.OPERATION_SUCCESS)
-  }
-
-  /**
-   * Hook called when the child component ModalTransactionConfirmation triggers
-   * the event 'error'
-   * @return {void}
-   */
-  public onConfirmationError(error: string) {
-    this.$store.dispatch('wallet/RESET_TRANSACTION_STAGE')
-    this.$store.dispatch('notification/ADD_ERROR', error)
-  }
-
-  /**
    * Hook called when the child component MosaicAttachmentDisplay triggers
    * the event 'delete'
    * @return {void}
@@ -318,6 +257,8 @@ export class FormTransferCreationTs extends Vue {
   public onDeleteMosaic(id: MosaicId) {
     const updatedAttachedMosaics = [...this.formItems.attachedMosaics]
       .filter(({mosaicHex}) => mosaicHex !== id.toHex())
+
+    // fixes reactivity on attachedMosaics (observer resolution)
     Vue.set(this.formItems, 'attachedMosaics', updatedAttachedMosaics)
   }
 
@@ -349,29 +290,12 @@ export class FormTransferCreationTs extends Vue {
   }
 
   /**
-   * Process form input
-   * @return {void}
+   * Internal helper to format a {Mosaic} entry into
+   * an array of MosaicAttachmentType used in this form.
+   * @internal
+   * @param {Mosaic[]} mosaics 
+   * @return {MosaicAttachmentType[]}
    */
-  public async onSubmit() {
-    await this.$store.dispatch('wallet/ADD_STAGED_TRANSACTION', this.transaction)
-  }
-
-  /**
-   * internal helper for mosaic names
-   * @param {Mosaic} mosaic 
-   * @return {string}
-   */
-  protected getMosaicName(mosaicId: MosaicId | NamespaceId): string {
-    if (this.mosaicsNames.hasOwnProperty(mosaicId.toHex())) {
-      return this.mosaicsNames[mosaicId.toHex()]
-    }
-    else if (this.namespacesNames.hasOwnProperty(mosaicId.toHex())) {
-      return this.namespacesNames[mosaicId.toHex()]
-    }
-
-    return mosaicId.toHex()
-  }
-
   protected mosaicsToAttachments(mosaics: Mosaic[]): MosaicAttachmentType[] {
     return mosaics.map(
       mosaic => {
@@ -380,18 +304,10 @@ export class FormTransferCreationTs extends Vue {
         // amount will be converted to RELATIVE
         return {
           id: mosaic.id as MosaicId, //XXX resolve mosaicId from namespaceId
-          mosaicHex: mosaic.id.toHex(),
+          mosaicHex: mosaic.id.toHex(), // XXX resolve mosaicId from namespaceId
           name: this.getMosaicName(mosaic.id),
           amount: mosaic.amount.compact() / Math.pow(10, div)
         }
       })
-  }
-
-  @Watch('transaction')
-  onTransactionChange(newTransaction: TransferTransaction) {
-    this.$emit('onTransactionChange', {
-      transaction: newTransaction,
-      balanceEntries: this.attachedMosaics,
-    })
   }
 }

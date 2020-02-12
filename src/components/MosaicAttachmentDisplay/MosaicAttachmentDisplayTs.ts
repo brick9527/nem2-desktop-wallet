@@ -76,12 +76,19 @@ export class MosaicAttachmentDisplayTs extends Vue {
 
 /// region computed properties getter/setter
   public get mosaics(): MosaicAttachmentType[] {
-    console.log('get MosaicAttachmentDisplay.mosaics', this.attachedMosaics || this.value || [])
-    return [].concat(...(this.attachedMosaics || this.value || []))
+    return [].concat(...(this.attachedMosaics || this.value || [])).map(
+      ({id, mosaicHex, name, amount}) => ({
+        id,
+        mosaicHex,
+        amount,
+        name: name.hasOwnProperty('namespaceId')
+            ? name.namespaceId.fullName
+            : name
+      })
+    )
   }
 
   public set mosaics(attachments: MosaicAttachmentType[]) {
-    console.log('set MosaicAttachmentDisplay.mosaics', attachments)
     this.attachedMosaics = attachments
     this.$emit('change', attachments)
   }

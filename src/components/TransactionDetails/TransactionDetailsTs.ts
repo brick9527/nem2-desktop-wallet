@@ -15,12 +15,35 @@
  */
 import {Component, Prop, Vue} from 'vue-property-decorator'
 import {mapGetters} from 'vuex'
-import {Transaction, TransactionType, TransferTransaction, NetworkType} from 'nem2-sdk'
+import {
+  Transaction,
+  TransactionType,
+  NetworkType,
+  MosaicId,
+  AccountAddressRestrictionTransaction,
+  AccountLinkTransaction,
+  AccountMetadataTransaction,
+  AccountMosaicRestrictionTransaction,
+  AccountOperationRestrictionTransaction,
+  AddressAliasTransaction,
+  AggregateTransaction,
+  HashLockTransaction,
+  MosaicAddressRestrictionTransaction,
+  MosaicAliasTransaction,
+  MosaicDefinitionTransaction,
+  MosaicGlobalRestrictionTransaction,
+  MosaicMetadataTransaction,
+  MosaicSupplyChangeTransaction,
+  MultisigAccountModificationTransaction,
+  NamespaceMetadataTransaction,
+  NamespaceRegistrationTransaction,
+  SecretLockTransaction,
+  SecretProofTransaction,
+  TransferTransaction,
+} from 'nem2-sdk'
 
 // internal dependencies
-import {TransactionParams} from '@/core/transactions/TransactionParams'
-import {TransferTransactionParams} from '@/core/transactions/TransferTransactionParams'
-import {TransactionService} from '@/services/TransactionService'
+import {TransactionService, TransactionViewType} from '@/services/TransactionService'
 import {Formatters} from '@/core/utils/Formatters'
 
 // configuration
@@ -28,14 +51,27 @@ import networkConfig from '@/../config/network.conf.json'
 
 // child components
 // @ts-ignore
-import MosaicAmountDisplay from '@/components/MosaicAmountDisplay/MosaicAmountDisplay.vue'
+import TransactionDetailsHeader from '@/components/TransactionDetailsHeader/TransactionDetailsHeader.vue'
+// @ts-ignore
+import TransactionDetailsTransfer from '@/components/TransactionDetails/Transfer/Transfer.vue'
+// @ts-ignore
+import TransactionDetailsMosaicDefinition from '@/components/TransactionDetails/MosaicDefinition/MosaicDefinition.vue'
+// @ts-ignore
+import TransactionDetailsMosaicSupplyChange from '@/components/TransactionDetails/MosaicSupplyChange/MosaicSupplyChange.vue'
+// @ts-ignore
+import TransactionDetailsNamespaceRegistration from '@/components/TransactionDetails/NamespaceRegistration/NamespaceRegistration.vue'
 
 @Component({
   components: {
-    MosaicAmountDisplay,
+    TransactionDetailsHeader,
+    TransactionDetailsTransfer,
+    TransactionDetailsMosaicDefinition,
+    TransactionDetailsMosaicSupplyChange,
+    TransactionDetailsNamespaceRegistration,
   },
   computed: {...mapGetters({
     networkType: 'network/networkType',
+    networkMosaic: 'mosaic/networkMosaic',
     networkMosaicTicker: 'mosaic/networkMosaicTicker',
   })},
 })
@@ -51,6 +87,13 @@ export class TransactionDetailsTs extends Vue {
    * @var {NetworkType}
    */
   public networkType: NetworkType
+
+  /**
+   * Network mosaic id
+   * @see {Store.Mosaic}
+   * @var {MosaicId}
+   */
+  public networkMosaic: MosaicId
 
   /**
    * Current network currency mosaic ticker
@@ -75,58 +118,80 @@ export class TransactionDetailsTs extends Vue {
    * Transaction service
    * @var {TransactionService}
    */
-  public transactionService: TransactionService
+  public service: TransactionService
 
   /**
-   * Hook called when the component is mounted
-   * @return {void}
+   * Transaction view instance
+   * @var {TransactionViewType}
    */
-  public mounted() {
-    this.transactionService = new TransactionService(this.$store)
-  }
+  public view: TransactionViewType
 
-/// region computed properties getter/setter
-  public get parameters(): TransactionParams {
-    switch(this.transaction.type) {
-    default: throw new Error('Invalid transaction type in TransactionDetails')
-    case TransactionType.TRANSFER:
-      return TransferTransactionParams.createFromTransaction(this.transaction as TransferTransaction)
+  /**
+   * Expose transaction types to view
+   * @var {TransactionType}
+   */
+  public types = TransactionType
+
+  public created() {
+    if (!!this.transaction) {
+      this.view = this.getView()
     }
   }
-/// end-region computed properties getter/setter
+
+  public getView(): TransactionViewType {
+    this.service = new TransactionService(this.$store)
+
+    switch (this.transaction.type) {
+      case TransactionType.MOSAIC_DEFINITION: 
+        return this.service.getView(this.transaction as MosaicDefinitionTransaction)
+      case TransactionType.MOSAIC_SUPPLY_CHANGE:
+        return this.service.getView(this.transaction as MosaicSupplyChangeTransaction)
+      case TransactionType.REGISTER_NAMESPACE:
+        return this.service.getView(this.transaction as NamespaceRegistrationTransaction)
+      case TransactionType.TRANSFER:
+        return this.service.getView(this.transaction as TransferTransaction)
+      case TransactionType.ACCOUNT_RESTRICTION_ADDRESS:
+        return this.service.getView(this.transaction as AccountAddressRestrictionTransaction)
+      case TransactionType.LINK_ACCOUNT:
+        return this.service.getView(this.transaction as AccountLinkTransaction)
+      case TransactionType.ACCOUNT_METADATA_TRANSACTION:
+        return this.service.getView(this.transaction as AccountMetadataTransaction)
+      case TransactionType.ACCOUNT_RESTRICTION_MOSAIC:
+        return this.service.getView(this.transaction as AccountMosaicRestrictionTransaction)
+      case TransactionType.ACCOUNT_RESTRICTION_OPERATION:
+        return this.service.getView(this.transaction as AccountOperationRestrictionTransaction)
+      case TransactionType.ADDRESS_ALIAS:
+        return this.service.getView(this.transaction as AddressAliasTransaction)
+      case TransactionType.AGGREGATE_BONDED:
+      case TransactionType.AGGREGATE_COMPLETE:
+        return this.service.getView(this.transaction as AggregateTransaction)
+      case TransactionType.LOCK:
+        return this.service.getView(this.transaction as HashLockTransaction)
+      case TransactionType.MOSAIC_ADDRESS_RESTRICTION:
+        return this.service.getView(this.transaction as MosaicAddressRestrictionTransaction)
+      case TransactionType.MOSAIC_ALIAS:
+        return this.service.getView(this.transaction as MosaicAliasTransaction)
+      case TransactionType.MOSAIC_GLOBAL_RESTRICTION:
+        return this.service.getView(this.transaction as MosaicGlobalRestrictionTransaction)
+      case TransactionType.MOSAIC_METADATA_TRANSACTION:
+        return this.service.getView(this.transaction as MosaicMetadataTransaction)
+      case TransactionType.MODIFY_MULTISIG_ACCOUNT:
+        return this.service.getView(this.transaction as MultisigAccountModificationTransaction)
+      case TransactionType.NAMESPACE_METADATA_TRANSACTION:
+        return this.service.getView(this.transaction as NamespaceMetadataTransaction)
+      case TransactionType.SECRET_LOCK:
+        return this.service.getView(this.transaction as SecretLockTransaction)
+      case TransactionType.SECRET_PROOF:
+        return this.service.getView(this.transaction as SecretProofTransaction)
+    }
+  }
 
   /**
-   * Returns the effective fee paid if available
-   * @return {number}
+   * Whether set transaction is of type \a type
+   * @param {TransactionType} type 
+   * @return {boolean}
    */
-  public getFeeAmount(): number {
-    // - read per-transaction-type details
-    const details = this.transactionService.getTransactionDetails(this.transaction)
-    return details.effectiveFee || this.transaction.maxFee?.compact() || 0
+  public isType(type): boolean {
+    return !!this.transaction && this.transaction.type === type
   }
-
-  /*
-  get explorerBasePath() {
-    return this.app.explorerBasePath
-  }
-  get networkCurrency() {
-    return this.activeAccount.networkCurrency
-  }
-
-  get transactionDetails() {
-    return this.transaction.formattedInnerTransactions ?
-      this.transaction.formattedInnerTransactions.map(item => item.dialogDetailMap) :
-      [this.transaction.dialogDetailMap]
-  }
-
-  getStatus(): string {
-    if (!this.transaction.rawTx.signer) return null
-    return this.transaction.transactionStatusGroup
-  }
-
-  openExplorer(transactionHash) {
-    const {explorerBasePath} = this
-    return explorerBasePath + transactionHash
-  }
-  */
 }

@@ -279,15 +279,6 @@ export const routes: AppRoute[] = [
             },
             // @ts-ignore
             component: () => import('@/views/pages/namespaces/CreateNamespacePage/CreateNamespacePage.vue'),
-          }, {
-            path: '/createSubNamespace',
-            name: 'namespaces.createSubnamespace',
-            meta: {
-              protected: true,
-              title: 'Create_subNamespace',
-            },
-            // @ts-ignore
-            component: () => import('@/views/pages/namespaces/CreateSubNamespacePage/CreateSubNamespacePage.vue'),
           },
         ],
       },
@@ -364,24 +355,24 @@ export const routes: AppRoute[] = [
         children: [
           {
             path: '/generalSettings',
-            name: 'general.settings',
+            name: 'settings.general',
             meta: {
               protected: true,
               title: 'general_settings',
             },
             // @ts-ignore
-            component: () => import('@/views/pages/settings/general-settings/GeneralSettings.vue'),
+            component: () => import('@/views/forms/FormGeneralSettings/FormGeneralSettings.vue'),
           },
-          // {
-          //   path: '/settingPassword',
-          //   name: 'settings.password',
-          //   meta: {
-          //     protected: true,
-          //     title: 'account_password',
-          //   },
-          //   // @ts-ignore
-          //   component: () => import('@/views/setting/setting-password/SettingPassword.vue'),
-          // },
+          {
+            path: '/settingPassword',
+            name: 'settings.password',
+            meta: {
+              protected: true,
+              title: 'account_password',
+            },
+            // @ts-ignore
+            component: () => import('@/views/forms/FormAccountPasswordUpdate/FormAccountPasswordUpdate.vue'),
+          },
           {
             path: '/about',
             name: 'settings.about',
