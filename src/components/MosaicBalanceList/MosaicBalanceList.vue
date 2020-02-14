@@ -21,8 +21,9 @@
             </span>
           <span class="mosaic_value">
             <MosaicAmountDisplay :relative-amount="entry.amount"
-                                 :id="entry.id" />
-          </span>
+                                 :id="entry.id"
+                                 :size="'bigger'" />
+          </span>   
         </div>
       </div>
     </TabPane>
@@ -30,7 +31,7 @@
   <div v-else class="searchMosaic secondary_page_animate">
     <img
       src="@/views/resources/img/monitor/monitorLeftArrow.png" class="asset_setting_tit pointer"
-      alt="" @click="isEditionMode = false"
+      alt="" @click="isEditionMode = false" 
     >
     <div class="mosaicList">
       <div class="toggle_all_checked ">
@@ -43,6 +44,7 @@
           {{ $t('Display_expired_mosaic') }}
         </span>
       </div>
+
       <div
         v-for="(entry, index) in mosaicsWithInfo"
         :key="index"

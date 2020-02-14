@@ -139,8 +139,6 @@ export class ModalTransactionConfirmationTs extends Vue {
     // - log about transaction signature success
     this.$store.dispatch('diagnostic/ADD_INFO', 'Signed ' + transactions.length + ' Transaction(s) on stage with Hardware Wallet')
 
-    console.log("Signed Transactions: ", transactions.map(signed => signed.payload))
-
     // - transactions are ready to be announced
     transactions.map(async (signed) => await this.$store.commit('wallet/addSignedTransaction', signed))
 
@@ -176,27 +174,26 @@ export class ModalTransactionConfirmationTs extends Vue {
   public async onAccountUnlocked({account, password}: {account: Account, password: Password}) {
     this.service = new TransactionService(this.$store)
 
-    console.log("unlocked: ", account)
-
     // - log about unlock success
     this.$store.dispatch('diagnostic/ADD_INFO', 'Account ' + account.address.plain() + ' unlocked successfully.')
 
     // - get staged transactions and sign
-    this.stagedTransactions.map(async (staged) => {
+    await this.stagedTransactions.map(async (staged) => {
       const signedTx = account.sign(staged, this.generationHash)
-      console.log("Signed Transaction: ", {hash: signedTx.hash, payload: signedTx.payload})
+      this.$store.dispatch('diagnostic/ADD_DEBUG', 'Signed transaction with account ' + account.address.plain() + ' and result: ' + JSON.stringify({
+        hash: signedTx.hash,
+        payload: signedTx.payload
+      }))
       await this.$store.commit('wallet/addSignedTransaction', signedTx)
     })
 
     // - reset transaction stage
-    this.show = false
     this.$store.dispatch('wallet/RESET_TRANSACTION_STAGE')
 
     // - XXX end-user should be able to uncheck "announce now"
-
     // - broadcast signed transactions
     const results: BroadcastResult[] = await this.service.announceSignedTransactions()
-
+    
     // - notify about errors
     const errors = results.filter(result => false === result.success)
     if (errors.length) {
@@ -204,6 +201,7 @@ export class ModalTransactionConfirmationTs extends Vue {
     }
 
     this.$store.dispatch('notification/ADD_SUCCESS', NotificationType.OPERATION_SUCCESS)
+    this.show = false
     return this.$emit('success')
   }
 

@@ -73,15 +73,19 @@ export default {
       commit('currentAccount', currentAccountModel)
       commit('setAuthenticated', true)
 
+      dispatch('diagnostic/ADD_DEBUG', 'Changing current account to ' + currentAccountModel.getIdentifier(), {root: true})
+
       // reset store + re-initialize
       await dispatch('initialize')
       $eventBus.$emit('onAccountChange', currentAccountModel.getIdentifier())
     },
     ADD_WALLET({dispatch, getters, state}, walletModel) {
-      const resolvedAccount = getters['currentAccount']
+      const resolvedAccount = getters['currentAccount'] 
       if (!resolvedAccount || !resolvedAccount.values) {
         return
       }
+
+      dispatch('diagnostic/ADD_DEBUG', 'Adding wallet to account: ' + resolvedAccount.getIdentifier() + ' with: ' + walletModel.values.get('address'), {root: true})
 
       const wallets = resolvedAccount.values.get("wallets")
       wallets.push(walletModel.getIdentifier())

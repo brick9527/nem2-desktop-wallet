@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {NamespaceInfo, NamespaceId, QueryParams, Transaction, TransactionType} from 'nem2-sdk'
+import {NamespaceInfo, NamespaceId} from 'nem2-sdk'
 import Vue from 'vue'
 
 // internal dependencies
 import {RESTService} from '@/services/RESTService'
 import {AwaitLock} from './AwaitLock';
+import {NamespaceService} from '@/services/NamespaceService';
 const Lock = AwaitLock.create();
 
 export default {
@@ -38,7 +39,7 @@ export default {
     setInitialized: (state, initialized) => { state.initialized = initialized },
     addNamespaceInfo: (state, namespaceInfo: NamespaceInfo) => {
       let info = state.namespacesInfoByHex
-      let hex = info.id.toHex()
+      let hex = namespaceInfo.id.toHex()
 
       // register mosaic info
       info[hex] = namespaceInfo
@@ -73,28 +74,27 @@ export default {
     async REST_FETCH_INFO({commit, rootGetters}, namespaceId: NamespaceId) {
       const nodeUrl = rootGetters['network/currentPeer'].url
       const namespaceHttp = RESTService.create('NamespaceHttp', nodeUrl)
-      const mosaicInfo = await namespaceHttp.getNamespace(namespaceId).toPromise()
+      const namespaceInfo = await namespaceHttp.getNamespace(namespaceId).toPromise()
 
-      commit('addNamespaceInfo', mosaicInfo)
-      return mosaicInfo
+      commit('addNamespaceInfo', namespaceInfo)
+      return namespaceInfo
     },
-    async REST_FETCH_NAMES({commit, rootGetters}, namespaceIds: NamespaceId[]) {
+    async REST_FETCH_NAMES({commit, rootGetters}, namespaceIds: NamespaceId[]): Promise<{hex: string, name: string}[]> {
       const nodeUrl = rootGetters['network/currentPeer'].url
       const namespaceHttp = RESTService.create('NamespaceHttp', nodeUrl)
       const namespaceNames = await namespaceHttp.getNamespacesName(namespaceIds).toPromise()
 
       // map by hex if names available
-      const mappedNames = namespaceNames.filter(
-        entry => entry.name.length >= 1
-      ).map(
-        ({namespaceId, name}) => { return {
-          hex: namespaceId.toHex(),
-          name: name
-        }})
+      const mappedNames = namespaceNames
+        .filter(({name}) => name.length)
+        .map((namespaceName) => ({
+          hex:  namespaceName.namespaceId.toHex(),
+          name: namespaceName.name,
+        }))
 
       // update store
-      mappedNames.map(mappedEntry => commit('addNamespaceName', mappedEntry))
-      return namespaceIds.length === 1 ? mappedNames.shift().name : mappedNames
+      mappedNames.forEach(mappedEntry => commit('addNamespaceName', mappedEntry))
+      return mappedNames 
     },
 /// end-region scoped actions
   }
