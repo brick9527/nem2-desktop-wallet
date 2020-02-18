@@ -79,7 +79,9 @@
             </ValidationProvider>
 
             <div class="password-tip">
-              <span class="prompt pointer" @click="formItems.hasHint = !formItems.hasHint">{{ $t('Password_hint') }}</span>
+              <span class="prompt pointer" @click="formItems.hasHint = !formItems.hasHint">
+                {{ $t('Password_hint') }}
+              </span>
               <span
                 class="pointer create-account"
                 @click="$router.push({name: 'accounts.importAccount.importStrategy'})"
