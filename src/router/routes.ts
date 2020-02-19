@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {createStepImage, importStepImage} from '@/views/resources/Images'
-import {AppRoute} from './AppRoute'
 import i18n from '@/language'
+import { createStepImage, importStepImage } from '@/views/resources/Images'
+import { AppRoute } from './AppRoute'
 
 export const routes: AppRoute[] = [
   {
@@ -390,16 +390,6 @@ export const routes: AppRoute[] = [
             component: () => import('@/views/forms/FormAccountPasswordUpdate/FormAccountPasswordUpdate.vue'),
           },
           {
-            path: 'about',
-            name: 'settings.about',
-            meta: {
-              protected: true,
-              title: i18n.t('page_title_settings_about').toString(),
-            },
-            // @ts-ignore
-            component: () => import('@/views/pages/settings/AboutPage/AboutPage.vue'),
-          },
-          {
             path: 'diagnostic',
             name: 'settings.diagnostic',
             meta: {
@@ -408,6 +398,16 @@ export const routes: AppRoute[] = [
             },
             // @ts-ignore
             component: () => import('@/views/pages/settings/DiagnosticPage/DiagnosticPage.vue'),
+          },
+          {
+            path: 'about',
+            name: 'settings.about',
+            meta: {
+              protected: true,
+              title: i18n.t('page_title_settings_about').toString(),
+            },
+            // @ts-ignore
+            component: () => import('@/views/pages/settings/AboutPage/AboutPage.vue'),
           },
         ],
         /// end-region settings children

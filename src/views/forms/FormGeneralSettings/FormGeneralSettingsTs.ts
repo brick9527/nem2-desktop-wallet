@@ -13,32 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Component, Vue} from 'vue-property-decorator'
-import {mapGetters} from 'vuex'
-import {NetworkType, Password, Account} from 'nem2-sdk'
-
-// internal dependencies
-import {SettingService} from '@/services/SettingService'
-import {NotificationType} from '@/core/utils/NotificationType'
-
-// child components
-import {ValidationObserver, ValidationProvider} from 'vee-validate'
 // @ts-ignore
 import ErrorTooltip from '@/components/ErrorTooltip/ErrorTooltip.vue'
 // @ts-ignore
-import FormWrapper from '@/components/FormWrapper/FormWrapper.vue'
+import ExplorerUrlSetter from '@/components/ExplorerUrlSetter/ExplorerUrlSetter.vue'
 // @ts-ignore
 import FormLabel from '@/components/FormLabel/FormLabel.vue'
 // @ts-ignore
-import ExplorerUrlSetter from '@/components/ExplorerUrlSetter/ExplorerUrlSetter.vue'
+import FormWrapper from '@/components/FormWrapper/FormWrapper.vue'
 // @ts-ignore
 import LanguageSelector from '@/components/LanguageSelector/LanguageSelector.vue'
 // @ts-ignore
 import MaxFeeSelector from '@/components/MaxFeeSelector/MaxFeeSelector.vue'
 // @ts-ignore
 import WalletSelectorField from '@/components/WalletSelectorField/WalletSelectorField.vue'
+import { NotificationType } from '@/core/utils/NotificationType'
+// internal dependencies
+import { SettingService } from '@/services/SettingService'
 // @ts-ignore
 import ModalFormAccountUnlock from '@/views/modals/ModalFormAccountUnlock/ModalFormAccountUnlock.vue'
+import { Account, Password } from 'nem2-sdk'
+// child components
+import { ValidationObserver, ValidationProvider } from 'vee-validate'
+import { Component, Vue } from 'vue-property-decorator'
+import { mapGetters } from 'vuex'
+
 
 @Component({
   components: {
@@ -60,7 +59,7 @@ import ModalFormAccountUnlock from '@/views/modals/ModalFormAccountUnlock/ModalF
     defaultFee: 'app/defaultFee',
     defaultWallet: 'app/defaultWallet',
     knownWallets: 'wallet/knownWallets',
-  })}
+  })},
 })
 export class FormGeneralSettingsTs extends Vue {
   /**
@@ -127,12 +126,12 @@ export class FormGeneralSettingsTs extends Vue {
     this.formItems.maxFee = this.defaultFee
     this.formItems.explorerUrl = this.explorerUrl
     this.formItems.defaultWallet = this.defaultWallet && this.defaultWallet.length
-                                 ? this.defaultWallet : (this.knownWallets.length
-                                 ? this.knownWallets.shift()
-                                 : '')
+      ? this.defaultWallet : (this.knownWallets.length
+        ? this.knownWallets.shift()
+        : '')
   }
 
-/// region computed properties getter/setter
+  /// region computed properties getter/setter
   public get hasAccountUnlockModal(): boolean {
     return this.isUnlockingAccount
   }
@@ -140,7 +139,7 @@ export class FormGeneralSettingsTs extends Vue {
   public set hasAccountUnlockModal(f: boolean) {
     this.isUnlockingAccount = f
   }
-/// end-region computed properties getter/setter
+  /// end-region computed properties getter/setter
 
   /**
    * Submit action asks for account unlock
