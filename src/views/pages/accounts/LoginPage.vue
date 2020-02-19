@@ -7,9 +7,12 @@
         </div>
         <div class="welcome-box">
           <div class="banner-image">
-            <div class="top-welcome-text">
+            <span class="top-welcome-text">
               {{ $t('Nem_Catapult_Welcome_you_nice') }}
-            </div>
+            </span>
+            <span class="top-to-symbol-text">
+              {{ $t('To_symbol') }}
+            </span>
             <div class="bottom-welcome-text">
               {{ $t('This_program_is_free') }}
             </div>
