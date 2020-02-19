@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Component, Vue, Prop} from 'vue-property-decorator'
-import {mapGetters} from 'vuex'
-import {MosaicId, MosaicInfo} from 'nem2-sdk'
-
 // configuration
 import feesConfig from '@/../config/fees.conf.json'
 // @ts-ignore
 import FormLabel from '@/components/FormLabel/FormLabel.vue'
+import { MosaicId, MosaicInfo } from 'nem2-sdk'
+import { Component, Prop, Vue } from 'vue-property-decorator'
+import { mapGetters } from 'vuex'
+
 
 @Component({
   components: {
@@ -36,7 +36,7 @@ import FormLabel from '@/components/FormLabel/FormLabel.vue'
 export class MaxFeeSelectorTs extends Vue {
 
   @Prop({
-    default: 'form-line-container'
+    default: 'form-line-container',
   }) className: string
 
   /**
