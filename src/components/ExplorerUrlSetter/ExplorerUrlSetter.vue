@@ -1,7 +1,9 @@
 <template>
-  <div>
-    <FormLabel>{{ $t('set_explorer_link') }}</FormLabel>
-    <div class="inline-container">
+  <div class="explorer-url-setter-container">
+    <div class="label">
+      <FormLabel>{{ $t('set_explorer_link') }}</FormLabel>
+    </div>
+    <div class="value">
       <ValidationProvider
         v-slot="{ errors }"
         mode="lazy"
@@ -26,5 +28,6 @@
 
 <script>
 import {ExplorerUrlSetterTs} from './ExplorerUrlSetterTs'
+import './ExplorerUrlSetter.less'
 export default class ExplorerUrlSetter extends ExplorerUrlSetterTs {}
 </script>

@@ -62,12 +62,11 @@ export default class DiagnosticPage extends Vue {
   width: 100%;
   clear: both;
   min-height: 1rem;
-
+  margin-left: 45px;
   pre.logger {
-    max-width: 1000px;
+    width: 60%;
     max-height: 600px;
     overflow: auto;
-
     .normal { color: #000000; }
     .warning { color: #ffa500; }
     .error { color: #ff0000; }
