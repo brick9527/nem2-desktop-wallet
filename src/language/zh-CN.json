@@ -964,5 +964,7 @@
   "transaction_descriptor_16721": "Mosaic global restriction",
   "transaction_descriptor_16708": "Account metadata",
   "transaction_descriptor_16964": "Mosaic metadata",
-  "transaction_descriptor_17220": "Namespace metadata"
+  "transaction_descriptor_17220": "Namespace metadata",
+  "new_password_label": "密码（需要包含至少8个字符，1个字母和1个数字）",
+  "repeat_password_label": "确认密码"
 }
