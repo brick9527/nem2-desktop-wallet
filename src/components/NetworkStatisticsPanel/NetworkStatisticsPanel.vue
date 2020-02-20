@@ -5,7 +5,7 @@
         <div class="title">
           <span class="title_txt">{{ $t('accounts') }}</span>
         </div>
-        <img src="@/views/resources/img/monitor/network.png">
+        <img src="@/views/resources/img/monitor/point_amount.png" />
         <span class="txt_info">
           <AnimatedNumber v-model="countAccounts" />
         </span>
@@ -14,29 +14,27 @@
         <div class="title">
           <span class="title_txt">{{ $t('blocks') }}</span>
         </div>
-        <img src="@/views/resources/img/monitor/block_height.png">
+        <img src="@/views/resources/img/monitor/height.png" />
         <span class="txt_info">
           <AnimatedNumber v-model="currentHeight" />
         </span>
       </div>
       <div class="xym-outline wallet-info-tile">
         <div class="title">
-          <span class="title_txt">{{ $t('transactions') }}</span>
+          <span class="title_txt">{{ $t('speed') }}</span>
         </div>
-        <img src="@/views/resources/img/windowDashboardActive.png">
-        <span class="txt_info">
-          <AnimatedNumber v-model="countTransactions" />
+        <img src="@/views/resources/img/monitor/speed.png" />
+        <span class="txt_info speed">
+          <!-- <AnimatedNumber v-model="countTransactions" /> -->
+          15s
         </span>
+        <span class="speed-blocks">/100blocks</span>
       </div>
       <div class="xym-outline wallet-info-tile">
         <div class="title">
-          <span class="title_txt">
-            {{ $t('nodeUrl') }}:&nbsp;
-            <span class="title_txt">
-              {{ currentPeerInfo ? currentPeerInfo.friendlyName : $t('loading') }}
-            </span></span>
+          <span class="title_txt">{{ $t('node_amount') }}</span>
         </div>
-        <img src="@/views/resources/img/monitor/amount.png">
+        <img src="@/views/resources/img/monitor/point.png" />
         <span class="txt_info">
           <AnimatedNumber v-model="countNodes" />
         </span>
@@ -46,8 +44,8 @@
 </template>
 
 <script lang="ts">
-import {NetworkStatisticsPanelTs} from './NetworkStatisticsPanelTs'
-import './NetworkStatisticsPanel.less'
+import { NetworkStatisticsPanelTs } from "./NetworkStatisticsPanelTs";
+import "./NetworkStatisticsPanel.less";
 
 export default class NetworkStatisticsPanel extends NetworkStatisticsPanelTs {}
 </script>
