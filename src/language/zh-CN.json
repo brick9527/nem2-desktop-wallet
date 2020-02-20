@@ -965,5 +965,20 @@
   "transaction_descriptor_16721": "Mosaic global restriction",
   "transaction_descriptor_16708": "Account metadata",
   "transaction_descriptor_16964": "Mosaic metadata",
-  "transaction_descriptor_17220": "Namespace metadata"
+  "transaction_descriptor_17220": "Namespace metadata",
+  
+  "form_label_registration_type": "命名空间类型",
+  "form_label_account_to_be_converted": "要转换的帐户",
+  "form_label_cosignatory_modifications": "共签修改",
+  
+  "page_title_mosaics": "马赛克列表",
+  "page_title_mosaics_create": "创建新的马赛克",
+  "page_title_namespaces": "命名空间列表",
+  "page_title_namespaces_create": "创建新的命名空间",
+  "page_title_multisig_convert": "转换多签帐户",
+  "page_title_multisig_manage": "管理多签帐户",
+  "page_title_multisig_cosign": "签名",
+  
+  "approval_greater_than_cosignatories": "最小批准所需余项比可用余项多 {delta}。请添加余数或减少最小批准号。",
+  "removal_greater_than_cosignatories": "最小删除所需余弦比可用余弦多{delta}。请添加余弦或减少最小删除数。"
 }
