@@ -2,7 +2,6 @@
   <div class="form-label-container clearfix">
     <div class="clearfix">
       <span class="form-label">
-        <!-- default slot  -->
         <slot />
       </span>
     </div>

@@ -21,80 +21,71 @@
   background: #FFFFFF;
   overflow: hidden;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  // display: flex;
+  // align-items: center;
+  // justify-content: center;
 
-  .welcome-head {
-    margin: 0 auto 100px auto;
-    text-align: center;
-
-    .title {
-      font-size: 44px;
-      color: @black;
-      line-height: 36px;
+  .import-way-back {
+    background-color: #FFFFFF;
+    font-size: 24px;
+    .import-back-button {
+      color: @primary;
     }
-
-    .title-tips {
-      margin-top: 30px;
-      font-size: 24px;
-      color: @black;
-    }
-
-    .create-account {
-      color: @purple;
+    .import-back-button:hover {
       cursor: pointer;
-      background-color: transparent;
+    }
+    .import-way-welcome {
+      padding-left: 26px;
+      color: #666666;
     }
   }
 
-  .account-type {
-    width: 1350px;
-    height: 220px;
+  .import-way-inner-panel {
     margin: 0 auto;
+    width: 1250px;
+    height: 100%;
+    padding: 113px 0px 210px;
     display: flex;
-    justify-content: space-around;
-
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
     .account-item {
-      text-align: center;
-      width: 405px;
-      height: 300px;
-      background: @white;
-      box-shadow: 0 2px 10px 0 @boxShadow;
-      border-radius: 4px;
-
+      width: 600px;
+      height: 210px;
+      box-shadow:0px 0px 10px rgba(0,0,0,0.16);
+      border-radius:5px;
+      padding:35px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #44004E;
       .img-box {
+        display: inline-block;
         img {
-          width: 68px;
-          border: 1px dashed @black;
-          margin: 30px auto 15px;
+          width: 110px;
+          height: 101px;
         }
       }
-
-      .access-name {
-        font-size: 28px;
-        font-weight: 600;
-        color: @black;
-        line-height: 24px;
-        // margin-top: -15px;
-      }
-
-      .access-info {
-        margin: 20px auto 0 auto;
-        width: 280px;
-        font-size: 20px;
-        color: @grayDark;
-        line-height: 30px;
+      .info-box {
+        display: inline-block;
+        padding-left: 38px;
+        .access-name {
+          margin-bottom: 11px;
+          font-size: 36px;
+          font-weight: 500;
+          max-width: 382px;
+          overflow-wrap: break-word;
+        }
+        .access-info {
+          font-size: 24px;
+          max-width: 382px;
+          overflow-wrap: break-word;
+        }
       }
     }
-  }
-
-  .bottom-text {
-    margin-top: 200px;
-    text-align: center;
-    height: 20px;
-    font-size: 24px;
-    font-weight: 400;
-    color: @grayDark;
+    .account-item:hover {
+      background:rgba(82,0,198,0.1);
+      cursor: pointer;
+    }
   }
 }

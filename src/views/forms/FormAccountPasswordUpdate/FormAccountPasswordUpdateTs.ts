@@ -13,27 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Component, Vue} from 'vue-property-decorator'
-import {mapGetters} from 'vuex'
-import {NetworkType, Password, Account} from 'nem2-sdk'
-
-// internal dependencies
-import {ValidationRuleset} from '@/core/validation/ValidationRuleset'
-import {AccountsModel} from '@/core/database/entities/AccountsModel'
-import {AccountService} from '@/services/AccountService'
-import {AccountsRepository} from '@/repositories/AccountsRepository'
-
-// child components
-import {ValidationObserver, ValidationProvider} from 'vee-validate'
 // @ts-ignore
 import ErrorTooltip from '@/components/ErrorTooltip/ErrorTooltip.vue'
 // @ts-ignore
-import FormWrapper from '@/components/FormWrapper/FormWrapper.vue'
-// @ts-ignore
 import FormLabel from '@/components/FormLabel/FormLabel.vue'
 // @ts-ignore
-import ModalFormAccountUnlock from '@/views/modals/ModalFormAccountUnlock/ModalFormAccountUnlock.vue'
+import FormWrapper from '@/components/FormWrapper/FormWrapper.vue'
+import { AccountsModel } from '@/core/database/entities/AccountsModel'
 import { NotificationType } from '@/core/utils/NotificationType'
+// internal dependencies
+import { ValidationRuleset } from '@/core/validation/ValidationRuleset'
+import { AccountsRepository } from '@/repositories/AccountsRepository'
+import { AccountService } from '@/services/AccountService'
+// @ts-ignore
+import ModalFormAccountUnlock from '@/views/modals/ModalFormAccountUnlock/ModalFormAccountUnlock.vue'
+import { Account, Password } from 'nem2-sdk'
+// child components
+import { ValidationObserver, ValidationProvider } from 'vee-validate'
+import { Component, Vue } from 'vue-property-decorator'
+import { mapGetters } from 'vuex'
+
 
 @Component({
   components: {
@@ -46,7 +45,7 @@ import { NotificationType } from '@/core/utils/NotificationType'
   },
   computed: {...mapGetters({
     currentAccount: 'account/currentAccount',
-  })}
+  })},
 })
 export class FormAccountPasswordUpdateTs extends Vue {
   /**
@@ -73,12 +72,13 @@ export class FormAccountPasswordUpdateTs extends Vue {
    * @var {Object}
    */
   public formItems = {
+    oldPassword:'',
     password: '',
     passwordConfirm: '',
-    passwordHint: ''
+    passwordHint: '',
   }
 
-/// region computed properties getter/setter
+  /// region computed properties getter/setter
   public get hasAccountUnlockModal(): boolean {
     return this.isUnlockingAccount
   }
@@ -86,7 +86,7 @@ export class FormAccountPasswordUpdateTs extends Vue {
   public set hasAccountUnlockModal(f: boolean) {
     this.isUnlockingAccount = f
   }
-/// end-region computed properties getter/setter
+  /// end-region computed properties getter/setter
 
   /**
    * Submit action asks for account unlock
@@ -105,13 +105,13 @@ export class FormAccountPasswordUpdateTs extends Vue {
 
       // - create new password hash
       const passwordHash = service.getPasswordHash(new Password(this.formItems.password))
-      this.currentAccount.values.set("password", passwordHash)
-      this.currentAccount.values.set("hint", this.formItems.passwordHint)
+      this.currentAccount.values.set('password', passwordHash)
+      this.currentAccount.values.set('hint', this.formItems.passwordHint)
 
       // - update in storage
       repository.update(
         this.currentAccount.getIdentifier(),
-        this.currentAccount.values
+        this.currentAccount.values,
       )
 
       // - update state and finalize

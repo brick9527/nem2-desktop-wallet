@@ -28,20 +28,26 @@ export default class ImportStrategyTs extends Vue {
   public importInfoList = [
     {
       image: walletTypeImages.seedImg,
+      title: 'Create_Mnemonic_Account',
+      description: 'Do_not_have_an_account_then_create_account',
+      route: 'accounts.createAccount.info',
+    },
+    {
+      image: walletTypeImages.seedImg,
       title: 'Import_Seed',
       description: 'Import_Mnemonic_phrase_directly_to_make_an_account',
       route: 'accounts.importAccount.info',
     },
     {
-      image: walletTypeImages.trezorImg,
-      title: 'Access_Trezor',
-      description: 'Access_your_trezor_wallet_to_make_trezor_account',
-      route: null,
-    },
-    {
       image: walletTypeImages.ledgerImg,
       title: 'Access_Ledger',
       description: 'Access_your_ledger_wallet_to_make_ledge_account',
+      route: null,
+    },
+    {
+      image: walletTypeImages.trezorImg,
+      title: 'Access_Trezor',
+      description: 'Access_your_trezor_wallet_to_make_trezor_account',
       route: null,
     },
   ]
@@ -51,7 +57,7 @@ export default class ImportStrategyTs extends Vue {
    * @param link 
    */
   public redirect(routeName: string) {
-    if (!routeName || !routeName.length) {
+    if (!routeName || !routeName.length) {
       return this.$store.dispatch('notification/ADD_WARNING', this.$t('not_yet_open'))
     }
 

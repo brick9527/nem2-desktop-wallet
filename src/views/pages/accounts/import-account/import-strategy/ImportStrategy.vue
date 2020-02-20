@@ -1,28 +1,20 @@
 <template>
   <div class="import-way-wrapper radius">
+    <div class="import-way-back">
+      <span class="import-back-button">
+        <Icon type="ios-arrow-back" />{{ $t('back') }}
+      </span>
+      <span class="import-way-welcome">
+        {{ $t('welcome_to_symbol_world') }}
+      </span>
+    </div>
+
     <div class="import-way-inner-panel">
-      <div class="welcome-head">
-        <p class="title">
-          {{ $t('Access_My_Account') }}
-        </p>
-        <p class="title-tips">
-          {{ $t('Do_not_have_Account') }}
-          <span
-            class="create-account"
-            @click="$router.push({name:'accounts.createAccount.info', params:{nextPage:'accounts.createAccount.generateMnemonic'}})"
-          >
-            {{ $t('create_a_new_account') }}
-          </span>
-        </p>
-      </div>
-      <div class="account-type">
-        <div
-          v-for="(item,index) in importInfoList" :key="index" class="account-item"
-          @click="redirect(item.route)"
-        >
-          <div class="img-box radius">
-            <img :src="item.image">
-          </div>
+      <div v-for="(item,index) in importInfoList" :key="index" class="account-item">
+        <div class="img-box">
+          <img :src="item.image">
+        </div>
+        <div class="info-box">
           <p class="access-name">
             {{ $t(item.title) }}
           </p>
@@ -31,16 +23,13 @@
           </p>
         </div>
       </div>
-      <div class="bottom-text">
-        {{ $t('More_Access_Tool_is_working') }}...
-      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import ImportStrategyTs from './ImportStrategyTs'
-import "./ImportStrategy.less";
+import './ImportStrategy.less'
 
 export default class ImportStrategy extends ImportStrategyTs {}
 </script>
