@@ -1,28 +1,20 @@
 <template>
   <div class="import-way-wrapper radius">
-    <div class="import-way-back">
-      <span class="import-back-button">
-        <Icon type="ios-arrow-back" />{{ $t('back') }}
-      </span>
-      <span class="import-way-welcome">
-        {{ $t('welcome_to_symbol_world') }}
-      </span>
-    </div>
+    <ImportWayBackHead
+      :back-content="'back'" :welcome-content="'welcome_to_symbol_world'"
+      @backToLogin="$router.push('/login')"
+    />
 
     <div class="import-way-inner-panel">
-      <div v-for="(item,index) in importInfoList" :key="index" class="account-item">
-        <div class="img-box">
-          <img :src="item.image">
-        </div>
-        <div class="info-box">
-          <p class="access-name">
-            {{ $t(item.title) }}
-          </p>
-          <p class="access-info">
-            {{ $t(item.description) }}
-          </p>
-        </div>
-      </div>
+      <ImportWayItem
+        v-for="(item,index) in importInfoList"
+        :key="index"
+        :img-src="item.image"
+        :item-title="item.title"
+        :item-description="item.description"
+        :item-route="item.route"
+        @submitClick="redirect"
+      />
     </div>
   </div>
 </template>

@@ -85,9 +85,12 @@ import transferReceived from '@/views/resources/img/monitor/dash-board/dashboard
 import selected from '@/views/resources/img/monitor/mosaics/selected.png'
 // @ts-ignore
 import unselected from '@/views/resources/img/monitor/mosaics/unselected.png'
+// @ts-ignore
+import createWalletImg from '@/views/resources/img/login/createWalletImg.png'
 
 /// region exported image objects
 export const walletTypeImages = {
+  createWalletImg,
   seedImg,
   trezorImg,
   ledgerImg,

@@ -13,33 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-@import "../../../../resources/css/variables.less";
+import { Component, Vue, Prop } from 'vue-property-decorator'
 
-.import-way-wrapper {
-  height: 100%;
-  background: #FFFFFF;
-  overflow: hidden;
+@Component
+export class ImportWayBackHeadTs extends Vue {
+  @Prop()
+  backContent
 
-  // display: flex;
-  // align-items: center;
-  // justify-content: center;
-
-  .import-way-inner-panel {
-    margin: 0 auto;
-    width: 1250px;
-    height: 100%;
-    padding: 113px 0px 140px;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    .account-item {
-      width: 600px;
-      height: 210px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-  }
+  @Prop()
+  welcomeContent
 }

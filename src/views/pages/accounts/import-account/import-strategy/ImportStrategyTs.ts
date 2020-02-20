@@ -18,8 +18,17 @@ import Component from 'vue-class-component'
 
 // resources
 import {walletTypeImages} from '@/views/resources/Images'
+// @ts-ignore
+import ImportWayItem from '@/components/ImportWayItem/ImportWayItem.vue'
+// @ts-ignore
+import ImportWayBackHead from '@/components/ImportWayBackHead/ImportWayBackHead.vue'
 
-@Component
+@Component({
+  components: {
+    ImportWayItem,
+    ImportWayBackHead,
+  },
+})
 export default class ImportStrategyTs extends Vue {
   /**
    * List of available follow-up pages
@@ -27,7 +36,7 @@ export default class ImportStrategyTs extends Vue {
    */
   public importInfoList = [
     {
-      image: walletTypeImages.seedImg,
+      image: walletTypeImages.createWalletImg,
       title: 'Create_Mnemonic_Account',
       description: 'Do_not_have_an_account_then_create_account',
       route: 'accounts.createAccount.info',
