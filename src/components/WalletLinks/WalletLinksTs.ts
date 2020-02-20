@@ -21,7 +21,8 @@ import { mapGetters } from 'vuex'
 
 @Component({
   computed: {...mapGetters({
-    explorerUrl: 'app/explorerUrl'
+    explorerBaseUrl: 'app/explorerUrl',
+    faucetBaseUrl: 'app/faucetUrl'
   })}
 })
 export class WalletLinksTs extends Vue {
@@ -30,18 +31,17 @@ export class WalletLinksTs extends Vue {
     default: null
   }) wallet: WalletsModel
 
+  public explorerBaseUrl: string
+  public faucetBaseUrl: string
+
 /// region computed properties getter/setter
 /// end-region computed properties getter/setter
 
-  public openExplorer() {
-
+  public get explorerUrl() {
+    return this.explorerBaseUrl + '/account/' + this.wallet.values.get('address')
   }
 
-  public openFaucet() {
-
-  }
-
-  public shareQR() {
-    
+  public get faucetUrl() {
+    return this.faucetBaseUrl
   }
 }

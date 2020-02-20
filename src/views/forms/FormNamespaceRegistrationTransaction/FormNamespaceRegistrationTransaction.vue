@@ -15,20 +15,20 @@
             :rules="'required'"
           >
             <FormLabel>{{ $t('form_label_registration_type') }}</FormLabel>
-            <select
+            <Select
               v-model="formItems.registrationType"
-              class="input-size input-style"
+              class="select-size select-style"
             >
-              <option :value="typeRootNamespace">
+              <Option :value="typeRootNamespace">
                 {{ $t('option_root_namespace') }}
-              </option>
-              <option
+              </Option>
+              <Option
                 v-if="ownedNamespaces.length"
                 :value="typeSubNamespace"
               >
                 {{ $t('option_sub_namespace') }}
-              </option>
-            </select>
+              </Option>
+            </Select>
           </ValidationProvider>
         </div>
 
@@ -36,7 +36,7 @@
           v-if="formItems.registrationType === typeSubNamespace && ownedNamespaces.length"
           v-model="formItems.parentNamespaceName"
           label="form_label_parent_namespace"
-          :namespaces="ownedNamespaces"
+          :namespaces="fertileNamespaces"
         />
 
         <NamespaceNameInput
@@ -70,6 +70,7 @@
       :visible="hasConfirmationModal"
       @success="onConfirmationSuccess"
       @error="onConfirmationError"
+      @close="onConfirmationCancel"
     />
   </FormWrapper>
 </template>
