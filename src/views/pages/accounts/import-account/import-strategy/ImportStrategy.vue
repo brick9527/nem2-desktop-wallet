@@ -1,7 +1,7 @@
 <template>
   <div class="import-way-wrapper radius">
     <div class="import-way-back">
-      <span class="import-back-button">
+      <span class="import-back-button" @click="$router.push('/login')">
         <Icon type="ios-arrow-back" />{{ $t('back') }}
       </span>
       <span class="import-way-welcome">
@@ -10,7 +10,10 @@
     </div>
 
     <div class="import-way-inner-panel">
-      <div v-for="(item,index) in importInfoList" :key="index" class="account-item">
+      <div
+        v-for="(item,index) in importInfoList" :key="index" class="account-item"
+        @click="redirect(item.route)"
+      >
         <div class="img-box">
           <img :src="item.image">
         </div>
