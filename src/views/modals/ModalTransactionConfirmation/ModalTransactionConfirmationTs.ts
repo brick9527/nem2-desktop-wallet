@@ -31,6 +31,7 @@ import FormAccountUnlock from '@/views/forms/FormAccountUnlock/FormAccountUnlock
 // @ts-ignore
 import HardwareConfirmationButton from '@/components/HardwareConfirmationButton/HardwareConfirmationButton.vue'
 import { NotificationType } from '@/core/utils/NotificationType'
+import { WalletService } from '@/services/WalletService'
 
 @Component({
   components: {
@@ -133,22 +134,22 @@ export class ModalTransactionConfirmationTs extends Vue {
    * @return {void}
    */
   public async onTransactionsSigned(transactions: SignedTransaction[]) {
-    this.service = new TransactionService(this.$store)
+    const service = new TransactionService(this.$store)
 
     // - log about transaction signature success
     this.$store.dispatch('diagnostic/ADD_INFO', 'Signed ' + transactions.length + ' Transaction(s) on stage with Hardware Wallet')
 
     // - transactions are ready to be announced
-    transactions.map(async (signed) => await this.$store.commit('wallet/addSignedTransaction', signed))
+    for (let i = 0, m = transactions.length; i < m; i++) {
+      const signed = transactions[i]
+      this.$store.commit('wallet/addSignedTransaction', signed)
+    }
 
     // - reset transaction stage
-    this.show = false
-    this.$store.dispatch('wallet/RESET_TRANSACTION_STAGE')
-
-    // - XXX end-user should be able to uncheck "announce now"
+    await this.$store.dispatch('wallet/RESET_TRANSACTION_STAGE')
 
     // - broadcast signed transactions
-    const results: BroadcastResult[] = await this.service.announceSignedTransactions()
+    const results: BroadcastResult[] = await service.announceSignedTransactions()
 
     // - notify about errors
     const errors = results.filter(result => false === result.success)
@@ -156,7 +157,8 @@ export class ModalTransactionConfirmationTs extends Vue {
       return errors.map(result => this.$store.dispatch('notification/ADD_ERROR', result.error))
     }
 
-    return this.$emit('success')
+    this.$emit('success')
+    this.show = false
   }
 
   /**
@@ -170,38 +172,40 @@ export class ModalTransactionConfirmationTs extends Vue {
    * @param {Password} password 
    * @return {void}
    */
-  public async onAccountUnlocked({account, password}: {account: Account, password: Password}) {
-    this.service = new TransactionService(this.$store)
-
+  public onAccountUnlocked({account}: {account: Account}): void {
     // - log about unlock success
     this.$store.dispatch('diagnostic/ADD_INFO', 'Account ' + account.address.plain() + ' unlocked successfully.')
 
     // - get staged transactions and sign
-    await this.stagedTransactions.map(async (staged) => {
+    this.stagedTransactions.forEach((staged) => {
       const signedTx = account.sign(staged, this.generationHash)
       this.$store.dispatch('diagnostic/ADD_DEBUG', 'Signed transaction with account ' + account.address.plain() + ' and result: ' + JSON.stringify({
         hash: signedTx.hash,
         payload: signedTx.payload
       }))
-      await this.$store.commit('wallet/addSignedTransaction', signedTx)
+      this.$store.commit('wallet/addSignedTransaction', signedTx)
     })
 
     // - reset transaction stage
     this.$store.dispatch('wallet/RESET_TRANSACTION_STAGE')
-
+  
     // - XXX end-user should be able to uncheck "announce now"
-    // - broadcast signed transactions
-    const results: BroadcastResult[] = await this.service.announceSignedTransactions()
-    
-    // - notify about errors
-    const errors = results.filter(result => false === result.success)
-    if (errors.length) {
-      return errors.map(result => this.$store.dispatch('notification/ADD_ERROR', result.error))
-    }
 
+    // - notify about successful transaction announce
     this.$store.dispatch('notification/ADD_SUCCESS', NotificationType.OPERATION_SUCCESS)
+
+    // - broadcast signed transactions
+    const service = new TransactionService(this.$store)
+    service.announceSignedTransactions()
+      .then(results => {
+        const errors = results.filter(result => false === result.success)    // - notify about errors
+        if (errors.length) {
+          return errors.map(result => this.$store.dispatch('notification/ADD_ERROR', result.error))
+        }
+      })
+
+    this.$emit('success')
     this.show = false
-    return this.$emit('success')
   }
 
   /**
