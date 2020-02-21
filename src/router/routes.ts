@@ -144,6 +144,80 @@ export const routes: AppRoute[] = [
               component: () => import('@/views/pages/accounts/import-account/finalize/Finalize.vue'),
             }],
           },
+          {
+            path: 'creationPage',
+            name: 'accounts.creation.home',
+            meta: { protected: false },
+            // @ts-ignore
+            component: () => import('@/views/pages/accounts/creation-page/CreationPage.vue'),
+            children: [
+              {
+                path: 'generateMnemonic',
+                name: 'accounts.creation.generateMnemonic',
+                meta: { protected: false },
+                // @ts-ignore
+                component: () => import('@/views/pages/accounts/creation-page/generate-mnemonic/GenerateMnemonic.vue'),
+              },
+              {
+                path: 'backupMnemonic',
+                name: 'accounts.creation.backupMnemonic',
+                meta: { protected: false },
+                // @ts-ignore
+                component: () => import('@/views/pages/accounts/creation-page/backup-mnemonic/BackupMnemonic.vue'),
+              },
+              {
+                path: 'verifyMnemonic',
+                name: 'accounts.creation.verifyMnemonic',
+                meta: { protected: false },
+                // @ts-ignore
+                component: () => import('@/views/pages/accounts/creation-page/verify-mnemonic/VerifyMnemonic.vue'),
+              },
+              {
+                path: 'accountInfo',
+                name: 'accounts.creation.accountInfo',
+                meta: { protected: false },
+                // @ts-ignore
+                component: () => import('@/views/pages/accounts/creation-page/account-info/AccountInfo.vue'),
+              },
+              {
+                path: 'generateWallet',
+                name: 'accounts.creation.generateWallet',
+                meta: { protected: false },
+                // @ts-ignore
+                component: () => import('@/views/pages/accounts/creation-page/generate-wallet/GenerateWallet.vue'),
+              },
+            ],
+          },
+          {
+            path: 'importPage',
+            name: 'accounts.import.home',
+            meta: { protected: false },
+            // @ts-ignore
+            component: () => import('@/views/pages/accounts/import-page/ImportPage.vue'),
+            children: [
+              {
+                path: 'importMnemonic',
+                name: 'accounts.import.importMnemonic',
+                meta: { protected: false },
+                // @ts-ignore
+                component: () => import('@/views/pages/accounts/import-page/import-mnemonic/ImportMnemonic.vue'),
+              },
+              {
+                path: 'accountInfo',
+                name: 'accounts.import.accountInfo',
+                meta: { protected: false },
+                // @ts-ignore
+                component: () => import('@/views/pages/accounts/import-page/account-info/AccountInfo.vue'),
+              },
+              {
+                path: 'generateWallet',
+                name: 'accounts.import.generateWallet',
+                meta: { protected: false },
+                // @ts-ignore
+                component: () => import('@/views/pages/accounts/import-page/generate-wallet/GenerateWallet.vue'),
+              },
+            ],
+          },
         ],
       },
       {
