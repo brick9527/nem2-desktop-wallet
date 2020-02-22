@@ -50,3 +50,5 @@ Copyright (c) 2018-2019 NEM Licensed under the Apache License 2.0
 [self]: https://github.com/nemfoundation/nem2-desktop-wallet
 [docs]: https://nemtech.github.io
 [issues]: https://github.com/nemfoundation/nem2-desktop-wallet/issues
+
+test
